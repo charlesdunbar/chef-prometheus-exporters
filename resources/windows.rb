@@ -7,8 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
-resource_name :wmi_exporter
-provides :wmi_exporter
+resource_name :windows_exporter
+provides :windows_exporter
 
 property :version, String
 property :enabled_collectors, String, default: 'cpu,cs,logical_disk,net,os,service,system'
@@ -18,14 +18,14 @@ property :metrics_path, String, default: '/metrics'
 
 action :install do
   # Set property that can be queried with Chef search
-  node.default['prometheus_exporters']['wmi']['enabled'] = true
+  node.default['prometheus_exporters']['windows']['enabled'] = true
 
   params = "/Enabled_Collectors:#{new_resource.enabled_collectors}"
   params += " /ListenAddress:#{new_resource.listen_address}"
   params += " /ListenPort:#{new_resource.listen_port}"
   params += " /MetricsPath:#{new_resource.metrics_path}"
 
-  chocolatey_package 'prometheus-wmi-exporter.install' do
+  chocolatey_package 'prometheus-windows-exporter.install' do
     action :install
     version new_resource.version
     options "--params '\"#{params}\"'"
@@ -38,15 +38,15 @@ action :upgrade do
   params += " /ListenPort:#{new_resource.listen_port}"
   params += " /MetricsPath:#{new_resource.metrics_path}"
 
-  chocolatey_package 'prometheus-wmi-exporter.install' do
+  chocolatey_package 'prometheus-windows-exporter.install' do
     action :upgrade
     version new_resource.version
-    options "--params '\"#{params}\"'"
+    options params
   end
 end
 
 action :uninstall do
-  chocolatey_package 'prometheus-wmi-exporter.install' do
+  chocolatey_package 'prometheus-windows-exporter.install' do
     action :remove
   end
 end

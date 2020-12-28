@@ -1,5 +1,10 @@
 # prometheus\_exporters
 
+## 0.18.0
+
+- [Charles Dunbar] Add windows exporter 0.15.0
+- [Charles Dunbar] wmi exporter 0.12.0 - https://chocolatey.org/packages/prometheus-wmi-exporter.install
+
 ## 0.17.2
 
 - [Kirill Kuznetsov] Blackbox exporter 0.17.0

@@ -33,6 +33,7 @@ Tests are made using last available Chef 15 along with latest Chef 14.
 - [haproxy_exporter](https://github.com/evilmartians/chef-prometheus-exporters#haproxy_exporter)
 - [mongodb_exporter](https://github.com/evilmartians/chef-prometheus-exporters#mongodb_exporter)
 - [mysqld_exporter](https://github.com/evilmartians/chef-prometheus-exporters#mysqld_exporter)
+- [nginx_exporter](https://github.com/evilmartians/chef-prometheus-exporters#nginx_exporter)
 - [node_exporter](https://github.com/evilmartians/chef-prometheus-exporters#node_exporter)
 - [postgres_exporter](https://github.com/evilmartians/chef-prometheus-exporters#postgres_exporter)
 - [process_exporter](https://github.com/evilmartians/chef-prometheus-exporters#process_exporter)
@@ -41,8 +42,8 @@ Tests are made using last available Chef 15 along with latest Chef 14.
 - [snmp_exporter](https://github.com/evilmartians/chef-prometheus-exporters#snmp_exporter)
 - [statsd_exporter](https://github.com/evilmartians/chef-prometheus-exporters#statsd_exporter)
 - [varnish_exporter](https://github.com/evilmartians/chef-prometheus-exporters#varnish_exporter)
+- [windows_exporter](https://github.com/evilmartians/chef-prometheus-exporters#windows_exporter)
 - [wmi_exporter](https://github.com/evilmartians/chef-prometheus-exporters#wmi_exporter)
-- [nginx_exporter](https://github.com/evilmartians/chef-prometheus-exporters#nginx_exporter)
 # Resources
 
 ## apache_exporter
@@ -232,6 +233,25 @@ mysqld_exporter 'main' do
   config_my_cnf '~/.my/cnf'
   user 'mysql'
 end
+```
+## nginx_exporter
+
+* `nginx_retries`, String, default: 5
+* `nginx_retry_interval`, String, default: 5s
+* `nginx_scrape_uri`, String, default: 'http://127.0.0.1:83/nginx_status'
+* `nginx_ssl_ca_cert`, String
+* `nginx_ssl_client_cert`, String
+* `nginx_ssl_client_key`, String
+* `nginx_ssl_verify`, [true, false], default: false
+* `nginx_timeout`, String, default: 5s
+* `prometheus_const_labels`, String, default: ""
+* `web_listen_address`, String, default: ':9113'
+* `web_telemetry_path`, String, default: '/metrics'
+
+```ruby
+  nginx_exporter 'main' do
+    action %i(install enable start)
+  end
 ```
 
 ## node_exporter
@@ -514,7 +534,7 @@ Use the given defaults or set the attributes...
 
 and add `recipe['prometheus_exporters::varnish]` to your run_list.
 
-## wmi_exporter
+## windows_exporter
 
 Expects the Chocolatey package manager to already be installed.  This is up to individuals to provide by including the [Chocolatey cookbook](https://github.com/chocolatey/chocolatey-cookbook) in their own wrapper cookbooks.
 
@@ -522,7 +542,28 @@ Expects the Chocolatey package manager to already be installed.  This is up to i
 * `listen_address`, String, default: '0.0.0.0'
 * `listen_port`, String, default: '9182'
 * `metrics_path`, Strin, default: '/metrics'
-* `version`, String, default: '0.2.7'
+* `version`, String, default: '0.15.0'
+
+Use the given defaults or set the attributes...
+
+* `node['prometheus_exporters']['windows']['version']['listen_interface']`
+* `node['prometheus_exporters']['windows']['listen_address']`
+* `node['prometheus_exporters']['windows']['listen_port']`
+* `node['prometheus_exporters']['windows']['metrics_path']`
+
+and add `recipe['prometheus_exporters::windows]` to your run_list.
+
+## wmi_exporter
+
+Expects the Chocolatey package manager to already be installed.  This is up to individuals to provide by including the [Chocolatey cookbook](https://github.com/chocolatey/chocolatey-cookbook) in their own wrapper cookbooks.
+
+Note: This exporter is superseded by windows_exporter - https://chocolatey.org/packages/prometheus-wmi-exporter.install
+
+* `enabled_collectors`, String, default: 'cpu,cs,logical\_disk,net,os,service,system'
+* `listen_address`, String, default: '0.0.0.0'
+* `listen_port`, String, default: '9182'
+* `metrics_path`, Strin, default: '/metrics'
+* `version`, String, default: '0.12.0'
 
 Use the given defaults or set the attributes...
 
@@ -533,25 +574,6 @@ Use the given defaults or set the attributes...
 
 and add `recipe['prometheus_exporters::wmi]` to your run_list.
 
-## nginx_exporter
-
-* `nginx_retries`, String, default: 5
-* `nginx_retry_interval`, String, default: 5s
-* `nginx_scrape_uri`, String, default: 'http://127.0.0.1:83/nginx_status'
-* `nginx_ssl_ca_cert`, String
-* `nginx_ssl_client_cert`, String
-* `nginx_ssl_client_key`, String
-* `nginx_ssl_verify`, [true, false], default: false
-* `nginx_timeout`, String, default: 5s
-* `prometheus_const_labels`, String, default: ""
-* `web_listen_address`, String, default: ':9113'
-* `web_telemetry_path`, String, default: '/metrics'
-
-```ruby
-  nginx_exporter 'main' do
-    action %i(install enable start)
-  end
-```
 # Discovery
 
 Each exporter will set an attribute when it's enabled, in the form of `node['prometheus_exporters'][exporter_name]['enabled']`. This makes it possible to search for
